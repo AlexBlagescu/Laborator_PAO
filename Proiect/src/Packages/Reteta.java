@@ -10,6 +10,7 @@ public class Reteta {
         this.medicamente = new HashSet<String>(0);
         this.codReteta = codReteta;
     }
+
     public Reteta(HashSet<String> medicamente, int codReteta) {
         this.medicamente = medicamente;
         this.codReteta = codReteta;
@@ -32,10 +33,14 @@ public class Reteta {
     }
 
     public void afisareRetata() {
-        System.out.print("Reteta: ");
+        System.out.print("Reteta cod: ");
+        System.out.print(this.codReteta);
+        System.out.print(", Reteta medicamente: ");
+        StringBuilder sir = new StringBuilder("");
         for (String s : this.medicamente) {
-            System.out.printf("%s ", s);
+            sir.append(s).append(", ");
         }
-        System.out.println();
+        sir.deleteCharAt(sir.lastIndexOf(", "));
+        System.out.println(sir.toString());
     }
 }

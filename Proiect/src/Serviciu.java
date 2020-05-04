@@ -13,56 +13,52 @@ public class Serviciu {
     private ArrayList<Manager> manageri;
     private Set<CabinetMedical> cabineteMedicale;
     private Set<Rezidenti> rezidenti;
+    private CsvReader obCitire = null;
+    private CsvDisplay obAfisare = null;
+    private CsvWriter obScriere = null;
 
     public Serviciu() {
         this.pacientiOameni = new ArrayList<Pacient>();
         this.pacientiAnimale = new ArrayList<Animale>();
         this.medici = new ArrayList<Medic>();
+        this.reteta = new ArrayList<Reteta>();
         this.cabineteMedicale = new HashSet<CabinetMedical>();
         this.rezidenti = new HashSet<Rezidenti>();
         this.manageri = new ArrayList<Manager>();
-        this.reteta = new ArrayList<Reteta>();
+        this.obCitire = CsvReader.getInstance();
+        this.obAfisare = CsvDisplay.getInstance();
+        this.obScriere = CsvWriter.getInstance();
     }
-    public void addPacientOm(String nume, String prenume, int varsta, long CNP, String sex, boolean stareDeSanatate ,int codR) {
-        Pacient p = new Pacient(nume, prenume, varsta, CNP, sex, stareDeSanatate, codR);
-        pacientiOameni.add(p);
+    public void citestePacientiOameni() {
+        String fisier = "src/Packages/Pacient.csv";
+        this.pacientiOameni = obCitire.readPacientiOameni(fisier);
+        String actiune = "Read from " + fisier;
+        AuditService.writeToCSV(actiune);
+    }
+    public void addPacientOm(Pacient p) {
+        boolean gasit = false;
+        for (Pacient pacient : this.pacientiOameni) {
+            if (pacient.getCNP() == p.getCNP()) {
+                gasit = true;
+                break;
+            }
+        }
+        if (gasit) {
+            System.out.println("\nERROR:Pacientul exista deja!\n");
+        } else {
+            String fisier = "src/Packages/Pacient.csv";
+            String actiune = "Write in " + fisier;
+            obScriere.writePacientOm(fisier, actiune, p);
+            AuditService.writeToCSV(actiune);
+            this.pacientiOameni.add(p);
+        }
     }
     public void afisarePacientiOameni() {
-        if (pacientiOameni.size() > 0) {
-            System.out.println("Pacienti: ");
-            for (Pacient pacient : pacientiOameni) {
-                pacient.afisarePacienti();
-                if (pacient.getCodR() == 0) {
-                    System.out.println("Pacientul nu are reteta!");
-                } else {
-                    for (Reteta reteta : reteta) {
-                        if (pacient.getCodR() == reteta.getCodReteta()) {
-                            reteta.afisareRetata();
-                        }
-                    }
-                }
-            }
-        } else {
-            System.out.println("Nu exsita pacienti!");
-        }
+        obAfisare.displayPacientiOameni(pacientiOameni, reteta);
     }
 
     public void afisarePacientiCNP(long CNP){
-        System.out.println("Pacient: ");
-        for (Pacient pacient : pacientiOameni) {
-            if (pacient.getCNP() == CNP) {
-                pacient.afisarePacienti();
-                if (pacient.getCodR() == 0) {
-                    System.out.println("Pacientul nu are reteta!");
-                } else {
-                    for (Reteta reteta: reteta) {
-                        if (pacient.getCodR() == reteta.getCodReteta()) {
-                            reteta.afisareRetata();
-                        }
-                    }
-                }
-            }
-        }
+        obAfisare.displayPacientOmCNP(pacientiOameni, reteta, CNP);
     }
     public void removePacientOmCNP(long CNP) {
         int poz = -1;
@@ -76,27 +72,36 @@ public class Serviciu {
             pacientiOameni.remove(pacientiOameni.get(poz));
         }
     }
-    public void addPacientAnimal(String nume, long code, String tip, boolean stareDeSanatate) {
-        Animale p = new Animale(nume, code, tip, stareDeSanatate);
-        pacientiAnimale.add(p);
+    public void citestePacientiAnimale() {
+        String fisier = "src/Packages/Animale.csv";
+        this.pacientiAnimale = obCitire.readPacientiAnimale(fisier);
+        String actiune = "Read from " + fisier;
+        AuditService.writeToCSV(actiune);
+    }
+    public void addPacientAnimal(Animale a) {
+        boolean gasit = false;
+        for (Animale animal : this.pacientiAnimale) {
+            if (animal.getCode() == a.getCode()) {
+                gasit = true;
+                break;
+            }
+        }
+        if (gasit) {
+            System.out.println("\nERROR:Animalul exista deja!\n");
+        } else {
+            String fisier = "src/Packages/Animale.csv";
+            String actiune = "Write in " + fisier;
+            obScriere.writePacientAnimal(fisier, actiune, a);
+            AuditService.writeToCSV(actiune);
+            this.pacientiAnimale.add(a);
+        }
     }
     public void afisarePacientiAnimale() {
-        System.out.println("Pacienti Animale: ");
-        if (pacientiAnimale.size() > 0) {
-            for (Animale animale : pacientiAnimale) {
-                animale.afisarePacienti();
-            }
-        } else {
-            System.out.println("Nu exista pacienti animle!");
-        }
+        obAfisare.displayPacientiAnimale(pacientiAnimale);
+
     }
     public void afisareAnimaleCOD(long code) {
-        System.out.println("Pacient Animal: ");
-        for (Animale obiect : pacientiAnimale) {
-            if (obiect.getCode() == code) {
-                obiect.afisarePacienti();
-            }
-        }
+        obAfisare.displayPacientAnimaleCOD(pacientiAnimale, code);
     }
     public void removePacientAnimalCNP(long code) {
         int poz = -1;
@@ -110,19 +115,32 @@ public class Serviciu {
             pacientiAnimale.remove(pacientiAnimale.get(poz));
         }
     }
-    public void addMedic(String nume, String prenume, int varsta, long CNP, String sex, String orar) {
-        Medic p = new Medic(nume, prenume, varsta, CNP, sex, orar);
-        medici.add(p);
+    public void citesteMedici() {
+        String fisier = "src/Packages/Medic.csv";
+        this.medici = obCitire.readMedici(fisier);
+        String actiune = "Read from " + fisier;
+        AuditService.writeToCSV(actiune);
+    }
+    public void addMedic(Medic m) {
+        boolean gasit = false;
+        for (Medic medic : this.medici) {
+            if (medic.getCNP() == m.getCNP()) {
+                gasit = true;
+                break;
+            }
+        }
+        if (gasit) {
+            System.out.println("\nERROR:Medicul exista deja!\n");
+        } else {
+            String fisier = "src/Packages/Medic.csv";
+            String actiune = "Write in " + fisier;
+            obScriere.writeMedic(fisier, actiune, m);
+            AuditService.writeToCSV(actiune);
+            this.medici.add(m);
+        }
     }
     public void afisareMedici() {
-        System.out.println("Afisare medici:");
-        if (medici.size() > 0) {
-            for (Medic medic : medici) {
-                medic.afisareMedici();
-            }
-        } else {
-            System.out.println("Nu exista medici");
-        }
+        obAfisare.displayMedici(medici);
     }
     public void removeMedicCNP(long code) {
         int position = 0;
@@ -146,7 +164,7 @@ public class Serviciu {
             boolean ok = false;
             for (Pacient pacient: pacientiOameni) {
                 if (pacient.getCNP() == CNPPacient) {
-                    p.addPacientOm(pacient);
+                    p.addPacientOm(pacient.getCNP());
                     ok = true;
                 }
             }
@@ -184,26 +202,39 @@ public class Serviciu {
     public void afisRezidenti() {
         System.out.println("Rezidenti: ");
         if (rezidenti.size() > 0) {
-            Iterator<Rezidenti> it = rezidenti.iterator();
-            while (it.hasNext()) {
-                it.next().afisareRezidenti();
+            for (Rezidenti value : rezidenti) {
+                value.afisareRezidenti();
             }
         } else {
             System.out.println("Nu exista rezidenti!");
         }
     }
-    public void addReteta(int codReteta, HashSet<String> medicamente) {
-        Reteta p = new Reteta(medicamente, codReteta);
-        reteta.add(p);
+    public void citesteRetete() {
+        String fisier = "src/Packages/Reteta.csv";
+        this.reteta = obCitire.readReteta(fisier);
+        String actiune = "Read from " + fisier;
+        AuditService.writeToCSV(actiune);
+    }
+    public void addReteta(Reteta r) {
+        boolean gasit = false;
+        for (Reteta reteta : this.reteta) {
+            if (reteta.getCodReteta() == r.getCodReteta()) {
+                gasit = true;
+                break;
+            }
+        }
+        if (gasit) {
+            System.out.println("\nERROR:Reteta exista deja!\n");
+        } else {
+            String fisier = "src/Packages/Reteta.csv";
+            String actiune = "Write in " + fisier;
+            obScriere.writeReteta(fisier, actiune, r);
+            AuditService.writeToCSV(actiune);
+            this.reteta.add(r);
+        }
     }
     public void afisareRetete() {
-        if (reteta.size() > 0) {
-            for (Reteta reteta : reteta) {
-                reteta.afisareRetata();
-            }
-        } else {
-            System.out.println("Nu exista retete disponibile");
-        }
+        obAfisare.displayRetete(reteta);
     }
     public void addRetetaPacient(long CNP, int codReteta) {
         boolean ok = false, ok1 = false;
@@ -216,11 +247,15 @@ public class Serviciu {
         if (!ok) {
             System.out.println("Nu exista reteta cu codul respectiv!");
         } else {
-            for (Pacient pacient : pacientiOameni) {
-                if (pacient.getCNP() == CNP) {
-                    pacient.setCodR(codReteta);
-                    ok1 = true;
+            if (pacientiOameni != null) {
+                for (Pacient pacient : pacientiOameni) {
+                    if (pacient.getCNP() == CNP) {
+                        pacient.setCodR(codReteta);
+                        ok1 = true;
+                    }
                 }
+            } else {
+                System.out.println("Nu exista pacienti!");
             }
             if (!ok1) {
                 System.out.println("Nu exista pacientul cu CNP-ul respectiv");

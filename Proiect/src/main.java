@@ -1,16 +1,58 @@
+import Packages.Animale;
+import Packages.Medic;
+import Packages.Pacient;
+import Packages.Reteta;
+
+import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 public class main {
+    private static String[] args;
+
     public static void main(String[] args) {
         Serviciu ob = new Serviciu();
-        // Adaunga pacienti(Oameni)
-        ob.addPacientOm("Copos", "Geani", 41, 123456, "Masculin", true, 0);
-        ob.addPacientOm("Elena", "Velma", 55, 231456, "Femnini", false, 0);
+
+        //Citim toate retetele din CSV, le introducem intr-o structura de tip ArrayList si le afisam.
+        System.out.println("-Citim toate retele din fisier si le afisam:-\n");
+        ob.citesteRetete();
+        ob.afisareRetete();
+
+        // Separam output-urile -- O functie folosita pentru a intelge mai bine output-ul in consola
+        ob.afisare();
+
+        //Adaugam o noua retata curenta in ArrayList si in CSV, afisam din nou retele -- "ERROR" in caz de respectiva reteta exista deja
+        HashSet<String> medicamente = new HashSet<String>();
+        medicamente.add("Ibuprofen");
+        medicamente.add("Ibusinus");
+        Reteta r = new Reteta(medicamente, 12);
+        ob.addReteta(r);
+
+        //Afisarea retetelor
+        System.out.println("-Retetele dupa adaugarea unei noi retete-");
+        ob.afisareRetete();
+
+
+        // Separam output-urile
+        ob.afisare();
+
+        // Citim toti pacienti (Oameni) din CSV
+        ob.citestePacientiOameni();
 
         // Afisare pacienti(Oameni)
         System.out.println("-Afisam toti pacientii-");
+        ob.afisarePacientiOameni();
+
+        // Separam output-urile
+        ob.afisare();
+
+        //Creem un nou pacient, adaugam pacientul in structura si scriem  in CSV
+        Pacient p = new Pacient("Banu", "Iulia", 31, 256581, "Feminin", true, 25);
+        ob.addPacientOm(p);
+
+        // Afisare pacienti(Oameni)
+        System.out.println("-Afisam toti pacientii dupa adaugarea unui alt pacient-");
         ob.afisarePacientiOameni();
 
         // Separam output-urile
@@ -31,10 +73,8 @@ public class main {
         // Separam output-urile
         ob.afisare();
 
-        // Adaugarea unui pacient(Animal)
-
-        ob.addPacientAnimal("Grivei", 555555, "Caine", true);
-        ob.addPacientAnimal("Rufus", 666666, "Cangur", false);
+        // Citim toti pacientii (Animale) din CSV
+        ob.citestePacientiAnimale();
 
         // Afisarea pacientilor(Animale)
         System.out.println("-Afisam toti pacientii animale-");
@@ -43,8 +83,20 @@ public class main {
         // Separam output-urile
         ob.afisare();
 
+        // Adaugam un pacient Animal nou, in structura, in CSV si afisam din nou lista cu toti pacientii Animale
+        Animale a = new Animale("Uzi", 999998, "Leu", true);
+        ob.addPacientAnimal(a);
+
+        // Afisarea pacientilor(Animale)
+        System.out.println("-Afisam toti pacientii animale dupa adaugarea unuia nou-");
+        ob.afisarePacientiAnimale();
+
+
+        // Separam output-urile
+        ob.afisare();
+
         // Afisarea unui pacient(Animal) dupa cod
-        System.out.println("-Afisam un anumit pacient animal dupca codul sau unic-");
+        System.out.println("-Afisam un anumit pacient animal dupa codul sau unic-");
         ob.afisareAnimaleCOD(555555);
 
         // Separam output-urile
@@ -55,17 +107,23 @@ public class main {
         ob.removePacientAnimalCNP(666666);
         ob.afisarePacientiAnimale();
 
-        // Adaugare medici
+        // Separam output-urile
+        ob.afisare();
 
-        ob.addMedic("Brutus", "Hercule", 35, 125678, "Masculin", "L,M,Mi,J,V");
-        ob.addMedic("Marcus", "Aurelius", 25, 199999, "Masculin", "L,M");
-        ob.addMedic("Ceausu", "Dorina", 30, 239999, "Feminin", "Mi,J,V");
+        //Citirea medicilor din CSV
+        ob.citesteMedici();
+
+        // Afisare medici
+        System.out.println("-Afisam toti medicii-");
+        ob.afisareMedici();
 
         // Separam output-urile
         ob.afisare();
 
-        // Afisare medici
-        System.out.println("-Afisam toti medicii-");
+        //Adaugam un nou medic in structura, in CSV si afisam medicii
+        Medic m = new Medic("Botezatu", "Catalin", 25, 232393, "Masculin", "L,M,MI,V");
+        ob.addMedic(m);
+        System.out.println("-Afisam medicii dupa ce adaugam un alt medic-");
         ob.afisareMedici();
 
         // Separam output-urile
@@ -103,20 +161,6 @@ public class main {
         // Afisare rezidenti
         System.out.println("-Afisam toti rezidentii-");
         ob.afisRezidenti();
-
-        // Separam output-urile
-        ob.afisare();
-
-        //Adaugarea unei noi retete
-        System.out.println("-Creem o noua reteta si o afisam-");
-        HashSet<String> reteta1 = new HashSet<String>(0);
-        reteta1.add("Paracetamol");
-        reteta1.add("Asipirina");
-        ob.addReteta(1, reteta1);
-
-        //Afisarea retetelor curente
-
-        ob.afisareRetete();
 
         // Separam output-urile
         ob.afisare();
