@@ -1,166 +1,161 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import Database.config.SetUpData;
+import Database.models.Persoana;
+import Database.models.Pacient;
+import Database.models.Medic;
+import Database.models.Animale;
+
+import Database.repository.RepositoryPacient;
+import Database.repository.RepositoryAnimale;
+import Database.repository.RepositoryMedic;
+import Database.repository.RepositoryPersoana;
 
 public class main {
+
     public static void main(String[] args) {
-        Serviciu ob = new Serviciu();
-        // Adaunga pacienti(Oameni)
-        ob.addPacientOm("Copos", "Geani", 41, 123456, "Masculin", true, 0);
-        ob.addPacientOm("Elena", "Velma", 55, 231456, "Femnini", false, 0);
+        SetUpData setUpData = new SetUpData();
 
-        // Afisare pacienti(Oameni)
-        System.out.println("-Afisam toti pacientii-");
-        ob.afisarePacientiOameni();
+        //Crearea tuturor tabelelor si initializarea servicilor
 
-        // Separam output-urile
-        ob.afisare();
+        setUpData.setUp();
+        RepositoryPersoana personRepository = new RepositoryPersoana();
+        RepositoryMedic medicRepository = new RepositoryMedic();
+        RepositoryAnimale animaleRepository = new RepositoryAnimale();
+        RepositoryPacient pacientRepository = new RepositoryPacient();
 
-        // Afisarea unui anumit pacient dupa CNP
-        System.out.println("-Afisam doar un anumit pacient dupa CNP-");
-        ob.afisarePacientiCNP(231456);
+        //Adaugarea unei persoane noi si afisarea tuturor persoanelor
 
-        // Separam output-urile
-        ob.afisare();
+        setUpData.addPerson("Alex", "Blagescu", 21, 1990123, "Masculin");
+        setUpData.displayPersoane();
 
-        // Stergerea unui pacient dupa CNP
-        System.out.println("-Stergem un pacient dupa CNP si afisam restul pacientilor ramasi-");
-        ob.removePacientOmCNP(123456);
-        ob.afisarePacientiOameni();
+        // Afisarea unei persoane dupa CNP
 
-        // Separam output-urile
-        ob.afisare();
+        personRepository.displayPersonAfterCNP(1990123);
 
-        // Adaugarea unui pacient(Animal)
+        // Modificarea numelui unei persoane dupa CNP
 
-        ob.addPacientAnimal("Grivei", 555555, "Caine", true);
-        ob.addPacientAnimal("Rufus", 666666, "Cangur", false);
+        personRepository.updatePersonName("Gigel", 1990123);
+        personRepository.displayPersonAfterCNP(1990123);
 
-        // Afisarea pacientilor(Animale)
-        System.out.println("-Afisam toti pacientii animale-");
-        ob.afisarePacientiAnimale();
+        // Modificarea prenumelui unei persoane dupa CNP
 
-        // Separam output-urile
-        ob.afisare();
+        personRepository.updatePersonPrename("Gigel", 1990123);
+        personRepository.displayPersonAfterCNP(1990123);
 
-        // Afisarea unui pacient(Animal) dupa cod
-        System.out.println("-Afisam un anumit pacient animal dupca codul sau unic-");
-        ob.afisareAnimaleCOD(555555);
+        // Modificarea varsta unei persoane dupa CNP
 
-        // Separam output-urile
-        ob.afisare();
+        personRepository.updatePersonAge(15, 1990123);
+        personRepository.displayPersonAfterCNP(1990123);
 
-        // Stergerae unui pacient animal dupa cod
-        System.out.println("-Stergem un anumit pacient animal dupa cod si afisam restul pacientilor ramasi-");
-        ob.removePacientAnimalCNP(666666);
-        ob.afisarePacientiAnimale();
+        // Stergerea unei persoane din baza de date dupa CNP si afisarea tuturor persoanelor
 
-        // Adaugare medici
+        personRepository.deletePersoanaAfterCNP(1990123);
+        setUpData.displayPersoane();
 
-        ob.addMedic("Brutus", "Hercule", 35, 125678, "Masculin", "L,M,Mi,J,V");
-        ob.addMedic("Marcus", "Aurelius", 25, 199999, "Masculin", "L,M");
-        ob.addMedic("Ceausu", "Dorina", 30, 239999, "Feminin", "Mi,J,V");
+        // Adaugarea unui pacient animal si afisarea tuturor pacientilor animale
 
-        // Separam output-urile
-        ob.afisare();
+        setUpData.addAnimal("Grivei", 123123, "Cangur", "Sanatos");
+        setUpData.displayAnimale();
 
-        // Afisare medici
-        System.out.println("-Afisam toti medicii-");
-        ob.afisareMedici();
+        // Afisarea unui animal dupa cod
 
-        // Separam output-urile
-        ob.afisare();
+        animaleRepository.displayAnimalAfterCode(123153);
 
-        //Concedierea unui medic dupa CNP
-        System.out.println("-Stergem un medic dupa CNP si afisam lista medicilor ramasi-");
-        ob.removeMedicCNP(125678);
-        ob.afisareMedici();
+        // Modifcarea numelui unui animal dupa cod si afisarea animalului dupa Code
 
-        // Separam output-urile
-        ob.afisare();
+        animaleRepository.updateAnimaleNume("Cora", 123123);
+        animaleRepository.displayAnimalAfterCode(123123);
 
-        //Asignam un Medic pentru un pacient(Om) cu ajutorul CNP-urilor
-        System.out.println("-Ii intrebuintam unui medic un pacient si afisam lista tuturor medicilor-");
-        ob.addPacientOmMedic(199999, 231456);
-        ob.afisareMedici();
+        // Modificarea stari de sanatate unui animal dupa cod
 
-        // Separam output-urile
-        ob.afisare();
+        animaleRepository.updateStareDeSanatate("Bolnav", 123123);
+        animaleRepository.displayAnimalAfterCode(123123);
 
-        // Asignam un Medic pentru un pacient(Animal) cu ajutorul CNP-ului si al codului unic.
-        System.out.println("-Ii intrebuitam unui medic un pacient animal si afisam lista tuturor medicilor-");
-        ob.addPacientAnimalMedic(199999, 555555);
-        ob.afisareMedici();
+        // Stergerea unui animal dupa cod si afisarea tuturor animalelor
 
-        // Separam output-urile
-        ob.afisare();
+        animaleRepository.deleteAnimalAfterCode(123123);
+        setUpData.displayAnimale();
 
-        // Adaugarea unui Rezident
+        // Adaugarea unui pacient om si afisarea tuturor pacientilor
 
-        ob.addRezident("Ciubota", "Vasile", 23, 100000, "Masculin", "CarolDavila", 239999);
-        ob.addRezident("Klaus", "David", 24, 100001, "Masculin", "MedicinaTimisoara", 239999);
+        setUpData.addPacient("Apetrei", "Codrin", 25, 199001, "Masculin", "Sanatos",-1);
+        setUpData.displayPacienti();
 
-        // Afisare rezidenti
-        System.out.println("-Afisam toti rezidentii-");
-        ob.afisRezidenti();
+        // Afisarea unui pacient om dupa CNP
 
-        // Separam output-urile
-        ob.afisare();
+        pacientRepository.displayPacientAfterCNP(199061);
 
-        //Adaugarea unei noi retete
-        System.out.println("-Creem o noua reteta si o afisam-");
-        HashSet<String> reteta1 = new HashSet<String>(0);
-        reteta1.add("Paracetamol");
-        reteta1.add("Asipirina");
-        ob.addReteta(1, reteta1);
+        // Modificarea numele unui pacient dupa CNP si afisarea lui
 
-        //Afisarea retetelor curente
+        pacientRepository.updatePacientNume("Bota", 199001);
+        pacientRepository.displayPacientAfterCNP(199001);
 
-        ob.afisareRetete();
+        // Modificarea prenumelui unui pacient dupa CNP si afisarea lui
 
-        // Separam output-urile
-        ob.afisare();
+        pacientRepository.updatePacientPrenume("Silviu", 199001);
+        pacientRepository.displayPacientAfterCNP(199001);
 
-        //Adaugam reteta unui Pacient
-        System.out.println("-Asignam o anumita reteta unui pacient si afisam lista totala cu pacienti-");
-        ob.addRetetaPacient(231456, 1);
-        ob.afisarePacientiOameni();
+        // Modificarea varstei unui pacient dupa CNP si afisarea lui
 
-        // Separam output-urile
-        ob.afisare();
+        pacientRepository.updatePacientVarsta(15, 199001);
+        pacientRepository.displayPacientAfterCNP(199001);
 
-        //Creeam un manager
-        ob.adaugareManager("Klint", "Alex", 21 ,1992700, "Masculin");
+        // Modificarea starii de sanatate a unui pacient dupa CNP si afisarea lui
 
-        //Afisarea managerului
-        System.out.println("-Afisam toti managerii-");
-        ob.afisareManager();
+        pacientRepository.updatePacientStareDeSanatate("Partial-Sanatos", 199001);
+        pacientRepository.displayPacientAfterCNP(199001);
 
-        // Separam output-urile
-        ob.afisare();
+        // Asigarea unei retete unui pacient si afisarea lui
 
-        //Creeam un cabinet medical
-        ob.addCabinetMedical(1, "Romania", 25);
+        pacientRepository.updatePacientCodReteta(1, 199001);
+        pacientRepository.displayPacientAfterCNP(199001);
 
-        //Afisare cabinete medicale
-        System.out.println("-Afisam toate cabinetele medicale-");
-        ob.afisCabineteMedicale();
+        // Stergerea unui pacient dupa CNP si afisarea tuturor pacientilor
 
-        // Separam output-urile
-        ob.afisare();
+        pacientRepository.deletePacientAfterCNP(199001);
+        setUpData.displayPacienti();
 
-        //Asignarea unei propieatati unui manager
-        System.out.println("-Asignam o propietate unui manager si afisam lista cu toti managerii-");
-        ob.asignarePropietateManager(25, 1992700);
-        ob.afisareManager();
+        // Adaugarea unui medic si afisarea tuturor medicilor
 
-        // Separam output-urile
-        ob.afisare();
+        setUpData.addMedic("Dorneanu", "Eduard", 30, 199999, "Masculin", "L,M,MI,V", -1, -1);
+        setUpData.displayMedici();
 
-        //Asignam un medic unui cabinet medical
-        System.out.println("-Asignam un medic unui cabinet medical si afisam lista cu toate cabintele medicale-");
-        ob.asignareMedicCabinet(25, 199999);
-        ob.afisCabineteMedicale();
+        // Afisarea unui medic dupa CNP
 
+        medicRepository.displayMedicAfterCNP(199999);
+//
+        // Modificarea numelui unui medic dupa CNP si afisarea lui
+
+        medicRepository.updateMedicNume("Bazavan", 199999);
+        medicRepository.displayMedicAfterCNP(199999);
+
+        // Modificarea prenumelui unui medic dupa CNP si afisarea lui
+
+        medicRepository.updateMedicPrenume("Alex", 199999);
+        medicRepository.displayMedicAfterCNP(199999);
+
+        // Modificarea varstei unui medic dupa CNP si afisarea lui
+
+        medicRepository.updateMedicVarsta(31, 199999);
+        medicRepository.displayMedicAfterCNP(199999);
+
+        // Modificarea orarului unui medic dupa CNP si afisarea lui
+
+        medicRepository.updateMedicOrar("L", 199999);
+        medicRepository.displayMedicAfterCNP(199999);
+
+        // Intrebuintam medicului un pacient animal si afisam medicul dupa CNP
+
+        medicRepository.updateMedicPacientAnimal(123123, 199999);
+        medicRepository.displayMedicAfterCNP(199999);
+
+        // Intrebuintam medicului un pacient om si afisam medicul dupa CNP
+
+        medicRepository.updateMedicPacientOm(199001, 199999);
+        medicRepository.displayMedicAfterCNP(199999);
+
+        // Stergearea unui medic dupa CNP
+
+        medicRepository.deleteMedic(199999);
+        medicRepository.displayMedicAfterCNP(199999);
     }
 }

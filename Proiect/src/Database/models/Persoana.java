@@ -1,4 +1,4 @@
-package Packages;
+package Database.models;
 
 public class Persoana {
     private String nume;
